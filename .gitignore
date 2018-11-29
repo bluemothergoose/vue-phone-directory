@@ -1,0 +1,9 @@
+# package directories
+node_modules
+jspm_packages
+
+# built files for serving over http
+dist
+
+# Serverless directories
+.serverless
