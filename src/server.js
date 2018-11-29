@@ -10,7 +10,7 @@ const oktaJwtVerifier = new OktaJwtVerifier({
   issuer: 'https://dev-119828.oktapreview.com/oauth2/default'
 })
 
-let app = express()
+let app = express() 
 app.use(cors())
 app.use(bodyParser.json())
 
