@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid mt-4">
-    <h1 class="h1">Phone List</h1>
+    <h1 class="h1">Phone List <b-btn @click="showModal">Add New</b-btn></h1>
     <b-alert :show="loading" variant="info">Loading...</b-alert>
     <b-row>
       <b-col>
@@ -29,15 +29,15 @@
               <td>{{ phoneuser.fax }}</td>
               <td>{{ phoneuser.cell }}</td>
               <td class="text-right">
-                <a href="#" @click.prevent="populatePhoneUserToEdit(phoneuser)">Edit</a> -
-                <a href="#" @click.prevent="deletePhoneUser(phoneuser.id)">Delete</a>
+                <b-btn v-b-modal.editUser @click.prevent="populatePhoneUserToEdit(phoneuser)">Edit</b-btn>
+                <b-btn @click.prevent="deletePhoneUser(phoneuser.id)" variant="danger">Delete</b-btn>
               </td>
             </tr>
           </tbody>
         </table>
       </b-col>
       <b-col lg="3">
-        <b-card :title="(model.id ? 'Edit Phone User ID#' + model.id : 'New Phone User')">
+        <b-modal id="editUser" ref="editUserRef" :title="(model.id ? 'Editing: ' + model.firstname + ' ' + model.lastname : 'New Phone User')">
           <form @submit.prevent="savePhoneUser">
             <b-form-group label="First Name">
               <b-form-input type="text" v-model="model.firstname" required></b-form-input>
@@ -63,11 +63,12 @@
             <b-form-group label="Cell Phone">
               <b-form-input type="text" v-model="model.cell"></b-form-input>
             </b-form-group>
-            <div>
-              <b-btn type="submit" variant="success">Save Phone User</b-btn>
+            <div id="saveUser">
+              <b-btn @click="hideModal">Close</b-btn>
+              <b-btn type="submit" variant="success" @click="hideModal">Save Phone User</b-btn>
             </div>
           </form>
-        </b-card>
+        </b-modal>
       </b-col>
     </b-row>
   </div>
@@ -88,6 +89,16 @@ export default {
     this.refreshPhoneUsers()
   },
   methods: {
+    hideModal () {
+      this.$refs.editUserRef.hide()
+    },
+    showModal () {
+      this.model = {}
+      this.$refs.editUserRef.show()
+    },
+    hideNewUserModal () {
+      this.$refs.addUserRef.hide()
+    },
     async refreshPhoneUsers () {
       this.activeUser = await this.$auth.getUser()
       if (this.activeUser.email !== 'isstaff@invent.org') {
@@ -107,6 +118,7 @@ export default {
       this.loading = false
     },
     async populatePhoneUserToEdit (phoneuser) {
+      this.$refs.editUserRef.hide()
       this.model = Object.assign({}, phoneuser)
     },
     async savePhoneUser () {
@@ -131,3 +143,14 @@ export default {
   }
 }
 </script>
+
+<style>
+#editUser___BV_modal_footer_ {
+  display: none;
+}
+
+#saveUser {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>
